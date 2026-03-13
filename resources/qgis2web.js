@@ -6,13 +6,13 @@ var map = new ol.Map({
     view: new ol.View({
          maxZoom: 28, minZoom: 1, projection: new ol.proj.Projection({
             code: 'EPSG:4326',
-            //extent: [-44.379639, -2.619306, -44.357111, -2.561611],
+            //extent: [-44.840071, -23.368386, -42.918127, -22.642856],
             units: 'degrees'})
     })
 });
 
 //initial view - epsg:3857 coordinates if not "Match project CRS"
-map.getView().fit([-44.412672, -2.620484, -44.299068, -2.559905], map.getSize());
+map.getView().fit([-44.323245, -23.016446, -44.308299, -23.006426], map.getSize());
 
 //full zooms only
 map.getView().setProperties({constrainResolution: true});
@@ -150,7 +150,7 @@ var featureOverlay = new ol.layer.Vector({
     updateWhileInteracting: true // optional, for instant visual feedback
 });
 
-var doHighlight = true;
+var doHighlight = false;
 var doHover = true;
 
 function createPopupField(currentFeature, currentFeatureKeys, layer) {
@@ -501,7 +501,7 @@ var Title = new ol.control.Control({
     element: (() => {
         var titleElement = document.createElement('div');
         titleElement.className = 'top-right-title ol-control';
-        titleElement.innerHTML = '<h2 class="project-title">Poligonal da Área do Porto Organizado de Itaqui</h2>';
+        titleElement.innerHTML = '<h2 class="project-title">Zoneamento do PDZ do Porto de Angra dos Reis</h2>';
         return titleElement;
     })(),
     target: 'top-right-container'
@@ -518,7 +518,7 @@ var Abstract = new ol.control.Control({
 
         var linkElement = document.createElement('a');
 
-        if (211 > 240) {
+        if (167 > 240) {
             linkElement.setAttribute("onmouseenter", "showAbstract()");
             linkElement.setAttribute("onmouseleave", "hideAbstract()");
             linkElement.innerHTML = 'i';
@@ -532,13 +532,13 @@ var Abstract = new ol.control.Control({
             window.showAbstract = function() {
                 linkElement.classList.remove("project-abstract");
                 linkElement.classList.add("project-abstract-uncollapsed");
-                linkElement.innerHTML = 'As camadas são apresentadas de acordo com os atos normativos que fixam, por decreto ou portaria, os limites das áreas dos portos organizados.<br /><br />Documento oficial publicado em:<br />https://bit.ly/poligonais_publicadas';
+                linkElement.innerHTML = 'As camadas estão reunidas de acordo com os horizontes de planejamento (curto, médio e longo prazo). <br /> <br />Documento oficial publicado em: <br />https://bit.ly/pdzs_publicados ';
             }
 
             hideAbstract();
         } else {
             linkElement.classList.add("project-abstract-uncollapsed");
-            linkElement.innerHTML = 'As camadas são apresentadas de acordo com os atos normativos que fixam, por decreto ou portaria, os limites das áreas dos portos organizados.<br /><br />Documento oficial publicado em:<br />https://bit.ly/poligonais_publicadas';
+            linkElement.innerHTML = 'As camadas estão reunidas de acordo com os horizontes de planejamento (curto, médio e longo prazo). <br /> <br />Documento oficial publicado em: <br />https://bit.ly/pdzs_publicados ';
         }
 
         titleElement.appendChild(linkElement);
@@ -551,65 +551,6 @@ map.addControl(Abstract);
 
 //geolocate
 
-	let isTracking = false;
-
-	const geolocateButton = document.createElement('button');
-	geolocateButton.className = 'geolocate-button fa fa-map-marker';
-	geolocateButton.title = 'Geolocalizza';
-
-	const geolocateControl = document.createElement('div');
-	geolocateControl.className = 'ol-unselectable ol-control geolocate';
-	geolocateControl.appendChild(geolocateButton);
-	map.getTargetElement().appendChild(geolocateControl);
-
-	const accuracyFeature = new ol.Feature();
-	const positionFeature = new ol.Feature({
-	  style: new ol.style.Style({
-		image: new ol.style.Circle({
-		  radius: 6,
-		  fill: new ol.style.Fill({ color: '#3399CC' }),
-		  stroke: new ol.style.Stroke({ color: '#fff', width: 2 }),
-		}),
-	  }),
-	});
-
-  const geolocateOverlay = new ol.layer.Vector({
-	  source: new ol.source.Vector({
-		features: [accuracyFeature, positionFeature],
-	  }),
-	});
-	
-	const geolocation = new ol.Geolocation({
-	  projection: map.getView().getProjection(),
-	});
-
-	geolocation.on('change:accuracyGeometry', function () {
-	  accuracyFeature.setGeometry(geolocation.getAccuracyGeometry());
-	});
-
-	geolocation.on('change:position', function () {
-	  const coords = geolocation.getPosition();
-	  positionFeature.setGeometry(coords ? new ol.geom.Point(coords) : null);
-	});
-
-	geolocation.setTracking(true);
-
-	function handleGeolocate() {
-	  if (isTracking) {
-		map.removeLayer(geolocateOverlay);
-		isTracking = false;
-	  } else if (geolocation.getTracking()) {
-		map.addLayer(geolocateOverlay);
-		const pos = geolocation.getPosition();
-		if (pos) {
-		  map.getView().setCenter(pos);
-		}
-		isTracking = true;
-	  }
-	}
-
-	geolocateButton.addEventListener('click', handleGeolocate);
-	geolocateButton.addEventListener('touchstart', handleGeolocate);
 
 
 //measurement
@@ -981,18 +922,6 @@ let measuring = false;
 
 //layer search
 
-var searchLayer = new SearchLayer({
-    layer: lyr_readoportoorganizadodeItaqui_1,
-    colName: 'Name',
-    zoom: 10,
-    collapsed: true,
-    map: map,
-    maxResults: 10,
-});
-map.addControl(searchLayer);
-document.getElementsByClassName('search-layer')[0].getElementsByTagName('button')[0].className += ' fa fa-binoculars';
-document.getElementsByClassName('search-layer-input-search')[0].placeholder = 'Search feature ...';
-    
 
 //scalebar
 
